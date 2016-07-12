@@ -1,5 +1,6 @@
 /**
  * Created by abhik.mitra on 27/06/14.
+ * Edited by ClearPoint Strategy on 12/07/16
  */
 
 (function (angular) {
@@ -169,6 +170,41 @@
             }
 
             function _highlightElement() {
+
+                var el = $($fkEl);
+                position = el.offset();
+                elementWidth = parseInt(el.css('width').replace('px', ''));
+                elementHeight = parseInt(el.css('height').replace('px', ''));
+                windowHeight = $( window ).height();
+                windowWidth = $( window ).width();
+                $('#ng-curtain-top').css({
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    display: 'block',
+                    height: position.top + 'px'
+                });
+                $('#ng-curtain-bottom').css({
+                    top: (position.top + elementHeight) + 'px',
+                    left: 0,
+                    width: '100%',
+                    display: 'block',
+                    height: (windowHeight - elementHeight) + 'px'
+                });
+                $('#ng-curtain-left').css({
+                    top: position.top + 'px',
+                    left: 0,
+                    width: position.left + 'px',
+                    display: 'block',
+                    height: elementHeight + 'px'
+                });
+                $('#ng-curtain-right').css({
+                    top: position.top + 'px',
+                    left: (position.left + elementWidth) + 'px',
+                    width: (windowWidth - position.left - elementWidth) + 'px',
+                    display: 'block',
+                    height: elementHeight + 'px'
+                });
                 var currentPos = $fkEl.css('position');
                 if (currentPos === 'static') {
                     $fkEl.addClass(this.staticClass);
@@ -191,8 +227,6 @@
                     $fkEl.removeClass(this.nonStaticClass);
                 }
 
-
-
             }
 
             function cleanUp() {
@@ -202,9 +236,6 @@
                     $($fkEl).popover('destroy');
                 }
                 unBindAdvanceOn(this);
-
-
-
             }
 
             return {
@@ -241,6 +272,16 @@
             var $fkEl;
 
             function generateTitle() {
+                $('#ng-curtain-top').css({
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%'
+                });
+                $('#ng-curtain-bottom').hide();
+                $('#ng-curtain-left').hide();
+                $('#ng-curtain-right').hide();
+
                 $fkEl = $(this.titleMainDiv);
                 $('body').append($fkEl);
                 this.addClassToCurtain(this.curtainClass);
@@ -254,7 +295,7 @@
                 var self = this;
                 this.scope.heading = this.heading;
                 this.scope.content = this.content;
-                $fkEl.html($compile(html.data)(this.scope));
+                $fkEl.html($compile(html)(this.scope));
                 if (this.hasReachedEndFn()) {
                     $('.nextBtn').text("Finish");
                 } else {
@@ -409,7 +450,7 @@
                     if (!template) {
                         return '';
                     }
-                    return $http.get(template, { cache: $templateCache });
+                    return $q.when($templateCache.get(template)) || $http.get(template, { cache: true });
                 }
                 function goToNext(interval) {
                     if (!hasReachedEnd()) {
@@ -468,21 +509,24 @@
 
                 function dropCurtain(shouldDrop) {
                     var curtain;
-                    $fkEl = $('#ng-curtain');
+                    $fkEl = $('#ng-curtain-top');
                     if (shouldDrop) {
                         if ($fkEl.size() === 0) {
-                            $('body').append('<div id="ng-curtain" class="'+globalHardcodedCurtainClass+'"></div>');
-                            $fkEl = $('#ng-curtain');
-                            $fkEl.slideDown(1000);
+                            $('body').append('<div id="ng-curtain-top" class="'+globalHardcodedCurtainClass+'"></div>');
+                            $('body').append('<div id="ng-curtain-bottom" class="'+globalHardcodedCurtainClass+'"></div>');
+                            $('body').append('<div id="ng-curtain-left" class="'+globalHardcodedCurtainClass+'"></div>');
+                            $('body').append('<div id="ng-curtain-right" class="'+globalHardcodedCurtainClass+'"></div>');
+                            $('#ng-curtain-top').show();
+                            $('#ng-curtain-bottom').show();
+                            $('#ng-curtain-left').show();
+                            $('#ng-curtain-right').show();
                         }
                     } else {
-                        $fkEl.slideUp(100, function () {
-                            $fkEl.remove();
-                        });
-
+                        $('#ng-curtain-top').remove();
+                        $('#ng-curtain-bottom').remove();
+                        $('#ng-curtain-right').remove();
+                        $('#ng-curtain-left').remove();
                     }
-
-
                 }
 
                 scope.$watch('ngJoyRide', function (newval, oldval) {
@@ -502,9 +546,6 @@
                         elem.cleanUp();
                     });
                     dropCurtain(false);
-                    element.off('joyride:prev');
-                    element.off('joyride:next');
-                    element.off('joyride:exit');
                 }
                 function cleanUpPreviousStep() {
                     if(currentStepCount!==0){
