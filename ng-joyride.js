@@ -49,9 +49,9 @@
                     '<div class=\"col-md-8\">' +
                     '<div class=\"pull-right\">' +
                     '<button id=\"prevBtn\" class=\"prevBtn btn btn-xs\" type=\"button\">Previous</button>' +
-                    ' <button id=\"nextBtn\" class=\"nextBtn btn btn-xs btn-primary\" type=\"button\">' +
+                    (config.advanceOn == undefined ? ' <button id=\"nextBtn\" class=\"nextBtn btn btn-xs btn-primary\" type=\"button\">' +
                     _generateTextForNext() +
-                    '</button>' +
+                    '</button>' : '') +
                     '</div>' +
                     '</div>' +
                     '</div>';
@@ -173,38 +173,40 @@
 
                 var el = $($fkEl);
                 position = el.offset();
-                elementWidth = parseInt(el.css('width').replace('px', ''));
-                elementHeight = parseInt(el.css('height').replace('px', ''));
-                windowHeight = $( window ).height();
-                windowWidth = $( window ).width();
-                $('#ng-curtain-top').css({
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    display: 'block',
-                    height: position.top + 'px'
-                });
-                $('#ng-curtain-bottom').css({
-                    top: (position.top + elementHeight) + 'px',
-                    left: 0,
-                    width: '100%',
-                    display: 'block',
-                    height: (windowHeight - elementHeight) + 'px'
-                });
-                $('#ng-curtain-left').css({
-                    top: position.top + 'px',
-                    left: 0,
-                    width: position.left + 'px',
-                    display: 'block',
-                    height: elementHeight + 'px'
-                });
-                $('#ng-curtain-right').css({
-                    top: position.top + 'px',
-                    left: (position.left + elementWidth) + 'px',
-                    width: (windowWidth - position.left - elementWidth) + 'px',
-                    display: 'block',
-                    height: elementHeight + 'px'
-                });
+                if (position != undefined) {
+                    elementWidth = parseInt(el.css('width').replace('px', ''));
+                    elementHeight = parseInt(el.css('height').replace('px', ''));
+                    windowHeight = $( window ).height();
+                    windowWidth = $( window ).width();
+                    $('#ng-curtain-top').css({
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        display: 'block',
+                        height: position.top + 'px'
+                    });
+                    $('#ng-curtain-bottom').css({
+                        top: (position.top + elementHeight) + 'px',
+                        left: 0,
+                        width: '100%',
+                        display: 'block',
+                        height: (windowHeight - elementHeight) + 'px'
+                    });
+                    $('#ng-curtain-left').css({
+                        top: position.top + 'px',
+                        left: 0,
+                        width: position.left + 'px',
+                        display: 'block',
+                        height: elementHeight + 'px'
+                    });
+                    $('#ng-curtain-right').css({
+                        top: position.top + 'px',
+                        left: (position.left + elementWidth) + 'px',
+                        width: (windowWidth - position.left - elementWidth) + 'px',
+                        display: 'block',
+                        height: elementHeight + 'px'
+                    });                    
+                }
                 var currentPos = $fkEl.css('position');
                 if (currentPos === 'static') {
                     $fkEl.addClass(this.staticClass);
@@ -226,6 +228,16 @@
                     $fkEl.removeClass(this.staticClass);
                     $fkEl.removeClass(this.nonStaticClass);
                 }
+                $('#ng-curtain-top').css({
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    display: 'block',
+                    height: '100%'
+                });
+                $('#ng-curtain-bottom').hide();
+                $('#ng-curtain-left').hide();
+                $('#ng-curtain-right').hide();
 
             }
 
@@ -281,7 +293,6 @@
                 $('#ng-curtain-bottom').hide();
                 $('#ng-curtain-left').hide();
                 $('#ng-curtain-right').hide();
-
                 $fkEl = $(this.titleMainDiv);
                 $('body').append($fkEl);
                 this.addClassToCurtain(this.curtainClass);
