@@ -15,9 +15,18 @@
     z-index: 9998;
     display: none;
 }
-
+.ng-element-class{
+    position: fixed;
+    background: red;
+    opacity: 0;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    z-index: 9997;
+    display: none;
+}
 .ng-joyride-title{
-
     z-index: 9999;
     position:absolute;
     top:50%; left:33%;
